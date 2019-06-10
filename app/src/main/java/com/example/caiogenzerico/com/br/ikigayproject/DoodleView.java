@@ -1,5 +1,7 @@
 package com.example.caiogenzerico.com.br.ikigayproject;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,16 +13,23 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class DoodleView extends View {
+
+    private DatabaseReference mDatabase;
+
     private static final int TOUCH_TOLERANCE = 10;
     private static final int AUTO_VALUE = 13;
 
@@ -45,6 +54,22 @@ public class DoodleView extends View {
     private boolean region3;
     private boolean region4;
     private int RADIUS2;
+    FragmentManager fragmentManager;
+    ArrayList<String> added;
+    ArrayList<String> love;
+    ArrayList<String> good;
+    ArrayList<String> need;
+    ArrayList<String> paid;
+    ArrayList<String> passion;
+    ArrayList<String> mission;
+    ArrayList<String> profession;
+    ArrayList<String> vocation;
+
+    String typing;
+
+    ArrayList<String> sugestions;
+
+
 
     public DoodleView(Context context, AttributeSet set) {
         super(context, set);
@@ -55,6 +80,18 @@ public class DoodleView extends View {
         paintLine.setStyle(Paint.Style.STROKE);
         paintLine.setStrokeWidth(5);
         paintLine.setStrokeCap(Paint.Cap.ROUND);
+        final Activity activity = (Activity) context;
+        fragmentManager = activity.getFragmentManager();
+        added = new ArrayList<String >();
+        love = new ArrayList<String >();
+        mission = new ArrayList<String >();
+        vocation = new ArrayList<String >();
+        profession = new ArrayList<String >();
+        good = new ArrayList<String >();
+        need = new ArrayList<String >();
+        paid = new ArrayList<String >();
+        passion = new ArrayList<String >();
+        sugestions = new ArrayList<String >();
 
     }
 
@@ -90,10 +127,12 @@ public class DoodleView extends View {
     }
 
     public void setDrawingColor(int color) {
+
         this.paintLine.setColor(color);
     }
 
     public int getDrawingColor() {
+
         return this.paintLine.getColor();
     }
 
@@ -110,6 +149,15 @@ public class DoodleView extends View {
         clear();
         onSizeChanged(getWidth(), getHeight(), getWidth(), getHeight());
         alternative =0;
+        added.clear();
+        love.clear();
+        paid.clear();
+        need.clear();
+        good.clear();
+        profession.clear();
+        passion.clear();
+        vocation.clear();
+        mission.clear();
     }
 
 
@@ -280,7 +328,6 @@ public class DoodleView extends View {
 
             touchStarted(
                     event.getX(actionIndex),
-
                     event.getY(actionIndex),
                     event.getPointerId(actionIndex)
             );
@@ -300,9 +347,74 @@ public class DoodleView extends View {
 
         invalidate();
 
-    } else {
+    } else {int x = (int) event.getX();
+            int y = (int) event.getY();
+            /*sugestions.clear();
+            sugestions = new ArrayList<String>();*/
+            boolean area1 = reg1.contains(x, y);
+            boolean area2 = reg2.contains(x, y);
+            boolean area3 = reg3.contains(x, y);
+            boolean area4 = reg4.contains(x, y);
+            InsertFragment insertFragment =
+                    new InsertFragment();
+            if(area1 && area2 && area3 && area4) {
+                typing = "ikigai";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(added);
+                insertFragment.setInserting(getContext().getString(R.string.thatsIkigai));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            }
+            else if(area1 && !area2 && !area3 && !area4) {
+                typing = "love";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(love);
+                insertFragment.setInserting(getContext().getString(R.string.yourLove));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(!area1 && area2 && !area3 && !area4) {
+                typing = "good";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(good);
+                insertFragment.setInserting(getContext().getString(R.string.youAreGood));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(!area1 && !area2 && area3 && !area4) {
+                typing = "need";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(need);
+                insertFragment.setInserting(getContext().getString(R.string.worldNeeds));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(area1 && area2 && !area3 && !area4) {
+                typing = "passion";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(passion);
+                insertFragment.setInserting(getContext().getString(R.string.passion));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(area1 && !area2 && area3 && !area4) {
+                typing = "mission";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(mission);
+                insertFragment.setInserting(getContext().getString(R.string.mission));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(!area1 && !area2 && area3 && area4) {
+                typing = "vocation";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(vocation);
+                insertFragment.setInserting(getContext().getString(R.string.vocation));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(!area1 && area2 && !area3 && area4) {
+                typing = "profession";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(profession);
+                insertFragment.setInserting(getContext().getString(R.string.profession));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            } else if(!area1 && !area2 && !area3 && area4) {
+                typing = "paid";
+                insertFragment.setTyping(typing);
+                insertFragment.setArray(paid);
+                insertFragment.setInserting(getContext().getString(R.string.paidFor));
+                insertFragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "insert");
+            }
 
-
+        return false;
     }
 
  return true;
@@ -431,5 +543,65 @@ public class DoodleView extends View {
                     Toast.LENGTH_SHORT).show();
             erase();
         }
+    }
+
+    public boolean addWord (String word) {
+        switch (typing){
+            case "love":
+                if(!love.contains(word)) {
+                    love.add(word);
+                    return true;
+                }
+                break;
+            case "good":
+                if(!good.contains(word)) {
+                    good.add(word);
+                    return true;
+                }
+                break;
+            case "need":
+                if(!need.contains(word)) {
+                    need.add(word);
+                    return true;
+                }
+                break;
+            case "paid":
+                if(!paid.contains(word)) {
+                    paid.add(word);
+                    return true;
+                }
+                break;
+            case "passion":
+                if(!passion.contains(word)) {
+                    passion.add(word);
+                    return true;
+                }
+                break;
+            case "profession":
+                if(!profession.contains(word)) {
+                    profession.add(word);
+                    return true;
+                }
+                break;
+            case "mission":
+                if(!mission.contains(word)) {
+                    mission.add(word);
+                    return true;
+                }
+                break;
+            case "vocation":
+                if(!vocation.contains(word)) {
+                    vocation.add(word);
+                    return true;
+                }
+                break;
+            case "ikigai":
+                if(!added.contains(word)) {
+                    added.add(word);
+                    return true;
+                }
+                break;
+        }
+        return false;
     }
 }
